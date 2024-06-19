@@ -1,5 +1,5 @@
 // Import necessary types from WebAuthn API
-type MyPublicKeyCredentialCreationOptions = CredentialCreationOptions & {
+export type MyPublicKeyCredentialCreationOptions = CredentialCreationOptions & {
   publicKey: {
     challenge: Uint8Array;
     rp: {
