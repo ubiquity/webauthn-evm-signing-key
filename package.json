@@ -30,6 +30,7 @@
     "open-source"
   ],
   "dependencies": {
+    "@fingerprintjs/fingerprintjs": "^4.4.1",
     "dotenv": "^16.4.4",
     "ethers": "5",
     "js-sha3": "^0.9.3"

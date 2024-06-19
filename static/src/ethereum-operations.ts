@@ -59,5 +59,6 @@ export async function ethereumOperations() {
     const challenge = "deterministic-challenge-string";
     const privateKey = deriveEthereumPrivateKey(userId, challenge);
     console.log("Derived Ethereum Private Key:", privateKey);
+    return credential;
   }
 }
