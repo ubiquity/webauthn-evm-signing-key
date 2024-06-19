@@ -31,8 +31,10 @@
   ],
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^4.4.1",
+    "@gnosis.pm/safe-core-sdk": "^3.2.0",
+    "@gnosis.pm/safe-ethers-lib": "^1.7.0",
     "dotenv": "^16.4.4",
-    "ethers": "5",
+    "ethers": "^6.13.1",
     "js-sha3": "^0.9.3"
   },
   "devDependencies": {
