@@ -7,3 +7,7 @@
 - The SAFE should be automatically registered on GitHub as the user's wallet.
 
 Given that Gnosis Chain sponsors transactions, the user should be able to sign transactions without having to pay for gas. Most importantly, the signing key can strictly be used for signing, and not hold any value. This means that the user should never need to export/expose their private key.
+
+For extended "mainstream" compatibility, in another future SAFE management UI that we build, we can:
+1. explicitly list the user's devices as the "signers" or "authorized devices" and refer to the wallet address of each as the "pairing code" for each device. In our applications, we can have some type of control button to "show device pairing code" which is just the public address that is generated.
+2. we can have a "sign in with github" button which will automatically deploy a SAFE if there is none associated, or identify the SAFE if there is one associated.
