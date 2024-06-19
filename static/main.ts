@@ -1,4 +1,4 @@
-import { ethereumOperations } from "./src/ethereum-operations";
+// import { ethereumOperations } from "./src/ethereum-operations";
 import { fingerPrinting } from "./src/fingerprinting";
 
 export async function mainModule() {
@@ -8,10 +8,8 @@ mainModule()
   .then(() => {
     console.log("mainModule loaded");
   })
-  .then(ethereumOperations)
-  .then((credential) => {
-    console.trace({ credential });
-  })
+  // .then(ethereumOperations)
+  // .then((credential) => console.trace({ credential }))
   .then(fingerPrinting)
   .catch((error) => {
     console.error(error);
