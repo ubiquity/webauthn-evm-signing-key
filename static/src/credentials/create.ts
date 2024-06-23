@@ -12,20 +12,24 @@ export async function createCredential(
 
     try {
         const credential = await navigator.credentials.create(publicKeyCredentialCreationOptions);
-        console.log("Credential created:", credential);
+        console.log("Credential created:", credential); // TODO: remove logs
         return credential;
     } catch (err) {
         console.error("Error creating credential:", err);
         return null;
     }
 }
-
-function createCredentialOptions(user: PublicKeyCredentialUserEntity, url = "pay.ubq.fi"): CredentialCreationOptions {
+/**
+ * Creates the options for the credential creation.
+ * Expects a PublicKeyCredentialUserEntity and the hostname of the RP.
+ */
+export function createCredentialOptions(user: PublicKeyCredentialUserEntity, url = "pay.ubq.fi"): CredentialCreationOptions {
     const hostname = new URL(window.location.origin).hostname;
     const NODE_ENV = process.env.NODE_ENV;
 
     let isCorrectUrl = false;
 
+    // additional phishing protection
     if (NODE_ENV === "development") {
         isCorrectUrl = hostname === "localhost";
     } else {
@@ -78,7 +82,8 @@ function createCredentialOptions(user: PublicKeyCredentialUserEntity, url = "pay
 
 }
 
-function createCredentialUser(displayName: string, name: string, id: string): PublicKeyCredentialUserEntity {
+// Returns a typed PublicKeyCredentialUserEntity
+export function createCredentialUser(displayName: string, name: string, id: string): PublicKeyCredentialUserEntity {
     return {
         /**
          * 'The authenticator uses the id to associate a credential with the user.
