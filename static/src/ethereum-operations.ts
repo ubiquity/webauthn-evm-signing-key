@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+// @ts-expect-error - type defs
 import { keccak256 } from "js-sha3";
 
 // Helper function to convert a string to Uint8Array
@@ -6,9 +7,10 @@ function strToUint8Array(str: string): Uint8Array {
   return new TextEncoder().encode(str);
 }
 
+
 // Function to create a new credential using WebAuthn API
-async function createCredential(): Promise<PublicKeyCredential | null> {
-  const publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions = {
+async function createCredential(): Promise<Credential | null> {
+  const publicKeyCredentialCreationOptions: CredentialCreationOptions = {
     publicKey: {
       challenge: strToUint8Array("deterministic-challenge-string"), // Use a deterministic challenge
       rp: {
@@ -31,7 +33,8 @@ async function createCredential(): Promise<PublicKeyCredential | null> {
       },
       timeout: 60000,
       attestation: "none", // Attestation is not needed for this use case
-    },
+    } as PublicKeyCredentialCreationOptions,
+    signal: new AbortSignal(),
   };
 
   try {
@@ -48,7 +51,7 @@ async function createCredential(): Promise<PublicKeyCredential | null> {
 function deriveEthereumPrivateKey(userId: string, challenge: string): string {
   const dataToHash = userId + challenge;
   const hash = keccak256(dataToHash);
-  return ethers.utils.hexZeroPad(`0x${hash}`, 32);
+  return ethers.zeroPadBytes(`0x${hash}`, 32);
 }
 
 // Main function to create a credential and derive the private key
