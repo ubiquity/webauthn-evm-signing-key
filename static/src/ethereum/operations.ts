@@ -30,7 +30,6 @@ export async function ethereumOperations(user: PublicKeyCredentialUserEntity) {
         // const challenge = "deterministic-challenge-string";
 
         const challenge = createSalt(user);
-
         const privateKey = deriveEthereumPrivateKey(userId, challenge);
         console.log("Derived Ethereum Private Key:", privateKey);
         return credential;
