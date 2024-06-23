@@ -1,4 +1,5 @@
-import { Wordlist, wordlists } from "ethers";
+import { BytesLike, Wordlist, wordlists } from "ethers";
+import { entropyToMnemonic, isValidMnemonic } from "@ethersproject/hdnode";
 
 export function getUserLocaleWordlist(): Wordlist {
     /**
@@ -17,3 +18,13 @@ export function getUserLocaleWordlist(): Wordlist {
     return words;
 }
 
+// Creates a recovery phrase from a private key
+export function generateMnemonic(pk: BytesLike) {
+    const mnemonic = entropyToMnemonic(pk, wordlists["en"]);
+
+    if (isValidMnemonic(mnemonic)) {
+        return mnemonic;
+    } else {
+        throw new Error("Invalid mnemonic generated");
+    }
+}
