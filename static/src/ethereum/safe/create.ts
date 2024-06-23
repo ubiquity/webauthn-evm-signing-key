@@ -21,7 +21,7 @@ async function getProvider() {
 async function createSafeSetup(user: PublicKeyCredentialUserEntity) {
     const provider = await getProvider();
     const challenge = createSalt(user);
-    const creds = await createCredential();
+    const creds = await createCredential(user);
     const privateKey = deriveEthereumPrivateKey(`${user.name}-${user.id}-${creds?.id}`, challenge)
     const signer = new ethers.Wallet(privateKey, provider);
 
