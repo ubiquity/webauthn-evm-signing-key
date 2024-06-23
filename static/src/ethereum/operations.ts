@@ -1,12 +1,20 @@
 import { createCredential } from "../credentials/create";
+import { strToUint8Array } from "../utils/shared";
 import { deriveEthereumPrivateKey } from "./key-gen/derive";
 import { createSalt } from "./key-gen/salts";
 
+export type User = {
+    displayName: string;
+    name: string;
+    id: string | BufferSource;
+}
+
 // Main function to create a credential and derive the private key
-export async function ethereumOperations(user: PublicKeyCredentialUserEntity) {
-    const credential = await createCredential();
+export async function ethereumOperations(user: User) {
+    const credential = await createCredential(user) ?? { id: strToUint8Array("some-id") };
     if (credential) {
         const { id } = credential;
+        user.id = id as BufferSource;
         const userId = `${user.name}-${user.id}-${id}`;
         /**
          * This string needs to be securely generated because the public ID of the
@@ -27,11 +35,12 @@ export async function ethereumOperations(user: PublicKeyCredentialUserEntity) {
          * high degree of entropy and fault tolerance.
          */
 
-        // const challenge = "deterministic-challenge-string";
-
         const challenge = createSalt(user);
         const privateKey = deriveEthereumPrivateKey(userId, challenge);
         console.log("Derived Ethereum Private Key:", privateKey);
-        return credential;
+        return {
+            privateKey,
+            credential
+        }
     }
 }

@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import { createSalt } from "../key-gen/salts";
 import { deriveEthereumPrivateKey } from "../key-gen/derive";
 import { createCredential } from "../../credentials/create";
+import { strToUint8Array } from "../../utils/shared";
 
 const safeDeploymentConfig: SafeDeploymentConfig = {
     // @ts-expect-error - safeVersion does not exist in SafeDeploymentConfig
@@ -40,7 +41,11 @@ async function createSafeSetup(user: PublicKeyCredentialUserEntity) {
     return { ethAdapter, safeAccountConfig };
 }
 
-async function createSafe(user: PublicKeyCredentialUserEntity) {
+export async function createSafe(user = {
+    name: "github-email",
+    displayName: "Github Email",
+    id: strToUint8Array("some-unique-id")
+}) {
     const { ethAdapter, safeAccountConfig } = await createSafeSetup(user);
 
     // Create a SafeFactory instance
@@ -53,7 +58,7 @@ async function createSafe(user: PublicKeyCredentialUserEntity) {
     }
 }
 
-async function deploySafe(
+export async function deploySafe(
     user = {
         name: "github-email",
         displayName: "Github Email",
@@ -66,6 +71,6 @@ async function deploySafe(
     return safe;
 }
 
-deploySafe().catch((error) => {
+createSafe().catch((error) => {
     console.error("Error deploying Safe:", error);
 });
