@@ -1,16 +1,17 @@
 import { randomBytes } from "ethers";
 import { PUBLIC_KEY } from "../utils/strings";
+import { strToUint8Array } from "../utils/shared";
+import { User } from "../ethereum/operations";
 
 // Function to create a new credential using WebAuthn API
-export async function createCredential(
-    name = "github-email",
-    displayName = "Github Email",
-    id = "some-unique-id"
-): Promise<Credential | null> {
-    const user = createCredentialUser(displayName, name, id)
+export async function createCredential(user_: User): Promise<Credential | null> {
+    const user = createCredentialUser(user_.displayName, user_.name, user_.id as string)
     const publicKeyCredentialCreationOptions = createCredentialOptions(user);
 
     try {
+        if (typeof navigator === "undefined") {
+            return null;
+        }
         const credential = await navigator.credentials.create(publicKeyCredentialCreationOptions);
         console.log("Credential created:", credential); // TODO: remove logs
         return credential;
@@ -24,10 +25,14 @@ export async function createCredential(
  * Expects a PublicKeyCredentialUserEntity and the hostname of the RP.
  */
 export function createCredentialOptions(user: PublicKeyCredentialUserEntity, url = "pay.ubq.fi"): CredentialCreationOptions {
-    const hostname = new URL(window.location.origin).hostname;
+    let hostname;
     const NODE_ENV = process.env.NODE_ENV;
 
     let isCorrectUrl = false;
+
+    if (typeof window !== "undefined") {
+        hostname = new URL(window.location.origin).hostname;
+    }
 
     // additional phishing protection
     if (NODE_ENV === "development") {
@@ -36,8 +41,10 @@ export function createCredentialOptions(user: PublicKeyCredentialUserEntity, url
         isCorrectUrl = hostname === url;
     }
 
+    const abortController = new AbortController();
+
     return {
-        signal: new AbortSignal(), // TODO: handle this better
+        signal: abortController.signal, // TODO: handle this better
         publicKey: {
             /**
              * 'The challenge is a buffer of cryptographically random bytes 

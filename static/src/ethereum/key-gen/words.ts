@@ -6,6 +6,10 @@ export function getUserLocaleWordlist(): Wordlist {
    * The available Wordlists by their ISO 639-1 Language Code.
    * (i.e. cz, en, es, fr, ja, ko, it, pt, zh_cn, zh_tw)
    */
+    if (typeof navigator === "undefined") {
+        return wordlists.en;
+    }
+
     const closestLang = navigator.languages.find((language) => language in wordlists || language.split("-")[0] in wordlists);
 
     let words;
@@ -19,8 +23,8 @@ export function getUserLocaleWordlist(): Wordlist {
 }
 
 // Creates a recovery phrase from a private key
-export function generateMnemonic(pk: BytesLike) {
-    const mnemonic = entropyToMnemonic(pk, wordlists["en"]);
+export function generateMnemonic(pk: BytesLike, wordlist?: Wordlist) {
+    const mnemonic = entropyToMnemonic(pk, wordlist || getUserLocaleWordlist());
 
     if (isValidMnemonic(mnemonic)) {
         return mnemonic;

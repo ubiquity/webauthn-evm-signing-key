@@ -8,7 +8,7 @@ export async function requestCredentials(user: PublicKeyCredentialUserEntity): P
     const credentials = await navigator.credentials.get({
         mediation: "conditional",
         publicKey: creds.publicKey,
-        signal: new AbortSignal(), // TODO: handle this better
+        signal: new AbortController().signal, // TODO: handle this better
     });
 
     // TODO: remove logs
