@@ -1,10 +1,10 @@
 import { SafeAccountConfig, SafeDeploymentConfig, SafeFactory } from "@gnosis.pm/safe-core-sdk";
-import { EthersAdapter } from "@gnosis.pm/safe-ethers-lib";
+import EthersAdapter from "@gnosis.pm/safe-ethers-lib";
 import { ethers } from "ethers";
 
 async function deploySafe() {
   // Initialize provider
-  const provider = new ethers.providers.JsonRpcProvider("https://rpc.gnosischain.com");
+  const provider = new ethers.JsonRpcProvider("https://rpc.gnosischain.com");
 
   // Replace with your derived private key
   const privateKey = "YOUR_DERIVED_PRIVATE_KEY";
@@ -12,6 +12,7 @@ async function deploySafe() {
 
   // Initialize EthersAdapter
   const ethAdapter = new EthersAdapter({
+    // @ts-expect-error - This wants ethers V5
     ethers,
     signer,
   });
@@ -24,6 +25,7 @@ async function deploySafe() {
 
   // Define deployment configuration
   const safeDeploymentConfig: SafeDeploymentConfig = {
+    // @ts-expect-error - safeVersion does not exist in SafeDeploymentConfig
     safeVersion: "1.4.1", // Updated to the latest version
     saltNonce: "0", // Change if necessary
   };
@@ -32,7 +34,7 @@ async function deploySafe() {
   const safeFactory = await SafeFactory.create({ ethAdapter });
 
   // Deploy the Safe
-  const safe = await safeFactory.deploySafe(safeAccountConfig, safeDeploymentConfig);
+  const safe = await safeFactory.deploySafe({ safeAccountConfig, safeDeploymentConfig });
   console.log("Safe deployed at:", safe.getAddress());
 }
 
