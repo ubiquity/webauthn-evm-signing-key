@@ -67,7 +67,7 @@
     "prettier": "^3.2.5",
     "ts-jest": "29.1.2",
     "tsx": "^4.7.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.5.2"
   },
   "lint-staged": {
     "*.ts": [
@@ -82,5 +82,6 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }
