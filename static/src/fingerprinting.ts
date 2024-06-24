@@ -25,6 +25,7 @@ function deriveEthereumPrivateKey(fingerprint: string, userId: string, challenge
   const dataToHash = fingerprint + userId + challenge;
   const hash = keccak256(dataToHash);
   // Ensure the hash is 64 characters long for hexZeroPad to pad it correctly
+  // @ts-expect-error utils is not recognized by TS
   return ethers.utils.hexZeroPad(`0x${hash}`, 32);
 }
 
