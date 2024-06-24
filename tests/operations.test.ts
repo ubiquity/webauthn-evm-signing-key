@@ -13,6 +13,7 @@ describe("ethereumOperations", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        process.env.SALT = "south-tube-human-wise-fashion-village"
     });
 
     it("Should derive an ethereum private key", async () => {
