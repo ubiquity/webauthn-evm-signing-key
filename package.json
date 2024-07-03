@@ -17,7 +17,7 @@
     "knip": "knip --config .github/knip.ts",
     "knip-ci": "knip --no-exit-code --reporter json --config .github/knip.ts",
     "prepare": "husky install",
-    "test": "jest --setupFiles dotenv/config --coverage",
+    "test": "jest --coverage",
     "cy:open": "cypress open",
     "cy:run": "cypress run"
   },
@@ -29,10 +29,7 @@
     "open-source"
   ],
   "dependencies": {
-    "@fingerprintjs/fingerprintjs": "^4.4.1",
-    "dotenv": "^16.4.4",
-    "ethers": "^6.13.1",
-    "js-sha3": "^0.9.3"
+    "ethers": "^6.13.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.6.1",

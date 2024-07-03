@@ -1,10 +1,7 @@
 import { keccak256 } from "ethers";
 import { getUserLocaleWordlist } from "./words";
-import dotenv from "dotenv";
 import { strToUint8Array } from "../../utils/shared";
 import { User, UserOAuth } from "../../types/webauthn";
-
-dotenv.config();
 
 /**
  * Inspired by BIP39, we create a salt that is a combination of an org defined
