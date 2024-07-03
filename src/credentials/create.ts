@@ -23,19 +23,15 @@ export async function createCredential(user_: User): Promise<Credential | null> 
  */
 export function createCredentialOptions(user: PublicKeyCredentialUserEntity, url = "pay.ubq.fi"): CredentialCreationOptions {
     let hostname;
-    const NODE_ENV = process.env.NODE_ENV;
-
-    let isCorrectUrl = false;
 
     if (typeof window !== "undefined") {
         hostname = new URL(window.location.origin).hostname;
     }
 
-    // additional phishing protection
-    if (NODE_ENV === "development" || NODE_ENV === "test") {
-        isCorrectUrl = hostname === "localhost";
-    } else {
-        isCorrectUrl = hostname === url;
+    const isCorrectUrl = hostname === "localhost" || hostname === url;
+
+    if (!isCorrectUrl) {
+        throw new Error("Passkey RP Invalid URL");
     }
 
     const abortController = new AbortController();

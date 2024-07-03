@@ -12,14 +12,14 @@ import { User, UserOAuth } from "../../types/webauthn";
  * Requires the user has been OAuthed, and the user has a PublicKeyCredential.
  */
 
-export function createSalt(user: User, userOauth: UserOAuth, cred: PublicKeyCredential) {
+export function createSalt(user: User, userOauth: UserOAuth, cred: PublicKeyCredential, orgSalts: string) {
     const wordlist = getUserLocaleWordlist()
     const wordCount = 12;
 
     const saltParts: string[] = [];
     const { displayName, id, name } = user
 
-    const orgSaltIndexes = idToIndexes(userOauth.id);
+    const orgSaltIndexes = idToIndexes(userOauth.id, orgSalts);
 
     const authEntropies = [
         `${displayName}-${id.toString()}-${name}`,
@@ -65,17 +65,16 @@ function getWordIndex(word: string) {
 }
 
 // takes a UUID and converts it to deterministic index range
-function idToIndexes(id: string): number[] {
+function idToIndexes(id: string, orgSalts: string): number[] {
     const partsToReturn = [];
     const idParts = id.split("-");
-    const hardcodedSalt = process.env.SALT;
-    if (!hardcodedSalt) throw new Error("Hardcoded salt is required to create a salt");
-    const orgSalts = hardcodedSalt.split("-");
+    if (!orgSalts) throw new Error("Hardcoded salt is required to create a salt");
+    const salts = orgSalts.split("-");
 
     // returns three words from the org mnemonic and will be appended to the user salt
     for (let i = 0; i < 3; i++) {
         const index = parseInt(keccak256(strToUint8Array(idParts[i])).slice(2, 5), 16); // convert the UUID part to a number
-        const mod = getWordIndex(orgSalts[i]); // get a word index from the org salt
+        const mod = getWordIndex(salts[i]); // get a word index from the org salt
         const newIndex = index % mod; // get a new index from the UUID part and the org salt
         partsToReturn.push(newIndex); // add the new index to the parts to return
     }

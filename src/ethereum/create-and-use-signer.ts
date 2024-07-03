@@ -5,7 +5,7 @@ import { deriveEthereumPrivateKey } from "./key-gen/derive";
 import { createSalt } from "./key-gen/salts";
 import { requestCredentials } from "../credentials/request";
 
-export async function createAndUseWallet(user: User, userOAuth: UserOAuth) {
+export async function createAndUseWallet(user: User, userOAuth: UserOAuth, orgSalts: string) {
     const controller = new AbortController();
 
     // backout after 20 seconds
@@ -33,7 +33,7 @@ export async function createAndUseWallet(user: User, userOAuth: UserOAuth) {
     // this should never be null
     if (credential) {
         // create a deterministic private key from the user's data
-        const entropy = createSalt(user, userOAuth, credential);
+        const entropy = createSalt(user, userOAuth, credential, orgSalts);
         const privateKey = deriveEthereumPrivateKey(entropy);
         const provider = new JsonRpcProvider("http://localhost:8545")
         return new Wallet(privateKey, provider);

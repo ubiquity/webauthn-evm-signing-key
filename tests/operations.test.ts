@@ -1,22 +1,39 @@
-import { Mnemonic, Wallet } from "ethers";
-import { generateMnemonic } from "../static/src/ethereum/key-gen/words";
-import { createAndUseWallet } from "../static/src/ethereum/create-and-use-signer";
-import { expect, describe, beforeAll, beforeEach, afterAll, afterEach, it } from "@jest/globals";
+import { JsonRpcProvider, Mnemonic, Wallet } from "ethers";
+import { expect, describe, it } from "@jest/globals";
+import { generateMnemonic } from "../src/ethereum/key-gen/words";
+import { User, UserOAuth } from "../src/types/webauthn";
+import { createSalt } from "../src/ethereum/key-gen/salts";
+import { deriveEthereumPrivateKey } from "../src/ethereum/key-gen/derive";
+import { PUBLIC_KEY, strToUint8Array } from "../src/utils/shared";
 
 const TEST_STR1 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 const TEST_STR2 = "4c4b4c4b-4c4b-4c4b-4c4b-4c4b4c4b4c4b"
+const ORG_MNEMONIC = "south-tube-human-wise-fashion-village-human-wise-fashion-south-tube-human"
+const mockUser = { displayName: "Ubiquity", id: "Long live the DAO.", name: "UBQ Intern" }
+const mockUserOAuth = { id: TEST_STR1, ca: new Date().toISOString(), iid: TEST_STR2 }
+
+async function init(user: User, userOAuth: UserOAuth, orgSalts: string) {
+    const credential = { id: btoa(TEST_STR1), type: PUBLIC_KEY, rawId: strToUint8Array(TEST_STR1) } as unknown as PublicKeyCredential;
+    const entropy = createSalt(user, userOAuth, credential, orgSalts);
+    const privateKey = deriveEthereumPrivateKey(entropy);
+    const provider = new JsonRpcProvider("http://localhost:8545")
+    return new Wallet(privateKey, provider);
+}
 
 describe("ethereumOperations", () => {
-    const mockUser = { name: "the intern", id: "long live the DAO, long live the DAO.", displayName: "UbiquityDAO" }
-    const mockUserOAuth = { id: TEST_STR1, ca: new Date().toISOString(), iid: TEST_STR2 }
-
-    beforeEach(() => {
-        jest.clearAllMocks();
-        process.env.SALT = "south-tube-human-wise-fashion-village-human-wise-fashion-south-tube-human"
+    beforeAll(() => {
+        Object.defineProperty(global, "window", {
+            value: {
+                location: {
+                    origin: "http://localhost:3000",
+                    hostname: "localhost"
+                }
+            }
+        });
     });
 
     it("Should derive an ethereum private key", async () => {
-        const wallet = await createAndUseWallet(mockUser, mockUserOAuth);
+        const wallet = await init(mockUser, mockUserOAuth, ORG_MNEMONIC);
         expect(wallet).toHaveProperty("privateKey");
         if (!wallet) return;
         const { privateKey } = wallet;
@@ -26,8 +43,8 @@ describe("ethereumOperations", () => {
     });
 
     it("Should derive the same private key using the same inputs", async () => {
-        const wallet1 = await createAndUseWallet(mockUser, mockUserOAuth);
-        const wallet2 = await createAndUseWallet(mockUser, mockUserOAuth);
+        const wallet1 = await init(mockUser, mockUserOAuth, ORG_MNEMONIC);
+        const wallet2 = await init(mockUser, mockUserOAuth, ORG_MNEMONIC);
         if (!wallet1 || !wallet2) return;
 
         const { privateKey: privateKey1 } = wallet1;
@@ -37,8 +54,8 @@ describe("ethereumOperations", () => {
     })
 
     it("Should derive different private keys using different inputs", async () => {
-        const wallet1 = await createAndUseWallet(mockUser, mockUserOAuth);
-        const wallet2 = await createAndUseWallet({ displayName: "Ubiquitious", id: "Puttng the 'A' in DAO", name: "UBQ Intern" }, mockUserOAuth);
+        const wallet1 = await init(mockUser, mockUserOAuth, ORG_MNEMONIC);
+        const wallet2 = await init({ displayName: "Ubiquitious", id: "Puttng the 'A' in DAO", name: "UBQ Intern" }, mockUserOAuth, ORG_MNEMONIC);
         if (!wallet1 || !wallet2) return;
 
         const { privateKey: privateKey1 } = wallet1;
@@ -48,7 +65,7 @@ describe("ethereumOperations", () => {
     })
 
     it("Should recover to the same private key with a given mnemonic", async () => {
-        const wallet = await createAndUseWallet(mockUser, mockUserOAuth);
+        const wallet = await init(mockUser, mockUserOAuth, ORG_MNEMONIC);
         if (!wallet) return;
         const { privateKey } = wallet;
 
