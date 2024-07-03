@@ -1,6 +1,6 @@
 import { Mnemonic, Wallet } from "ethers";
 import { generateMnemonic } from "../static/src/ethereum/key-gen/words";
-import { createAndUse } from "../static/src/ethereum/operations";
+import { createAndUseSigner } from "../static/src/ethereum/create-and-use-signer";
 import { expect, describe, beforeAll, beforeEach, afterAll, afterEach, it } from "@jest/globals";
 
 const TEST_STR1 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
@@ -16,7 +16,7 @@ describe("ethereumOperations", () => {
     });
 
     it("Should derive an ethereum private key", async () => {
-        const wallet = await createAndUse(mockUser, mockUserOAuth);
+        const wallet = await createAndUseSigner(mockUser, mockUserOAuth);
         expect(wallet).toHaveProperty("privateKey");
         if (!wallet) return;
         const { privateKey } = wallet;
@@ -26,8 +26,8 @@ describe("ethereumOperations", () => {
     });
 
     it("Should derive the same private key using the same inputs", async () => {
-        const wallet1 = await createAndUse(mockUser, mockUserOAuth);
-        const wallet2 = await createAndUse(mockUser, mockUserOAuth);
+        const wallet1 = await createAndUseSigner(mockUser, mockUserOAuth);
+        const wallet2 = await createAndUseSigner(mockUser, mockUserOAuth);
         if (!wallet1 || !wallet2) return;
 
         const { privateKey: privateKey1 } = wallet1;
@@ -37,8 +37,8 @@ describe("ethereumOperations", () => {
     })
 
     it("Should derive different private keys using different inputs", async () => {
-        const wallet1 = await createAndUse(mockUser, mockUserOAuth);
-        const wallet2 = await createAndUse({ displayName: "Ubiquitious", id: "Puttng the 'A' in DAO", name: "UBQ Intern" }, mockUserOAuth);
+        const wallet1 = await createAndUseSigner(mockUser, mockUserOAuth);
+        const wallet2 = await createAndUseSigner({ displayName: "Ubiquitious", id: "Puttng the 'A' in DAO", name: "UBQ Intern" }, mockUserOAuth);
         if (!wallet1 || !wallet2) return;
 
         const { privateKey: privateKey1 } = wallet1;
@@ -48,7 +48,7 @@ describe("ethereumOperations", () => {
     })
 
     it("Should recover to the same private key with a given mnemonic", async () => {
-        const wallet = await createAndUse(mockUser, mockUserOAuth);
+        const wallet = await createAndUseSigner(mockUser, mockUserOAuth);
         if (!wallet) return;
         const { privateKey } = wallet;
 

@@ -11,16 +11,8 @@ dotenv.config();
  * salt and a user specific salt. This salt is used to derive a deterministic
  * Ethereum private key.
  * 
- * This way our single org salt is not a single point of failure, and we can
- * still derive the same private key for a user across multiple devices.
- * 
- * These org salts could be put on rotation/expire, etc, but would require secure 
- * tracking in order to derive the same private key for a user after rotation, but
- * is still likely more secure than a single immutable org salt.
- * 
  * Creates a salt for a user based on the org salt and user specific data.
- * Requires the user has been OAuthed, we can use two UUIDs and a CA to create
- * a user specific salt.
+ * Requires the user has been OAuthed, and the user has a PublicKeyCredential.
  */
 
 export function createSalt(user: User, userOauth: UserOAuth, cred: PublicKeyCredential) {

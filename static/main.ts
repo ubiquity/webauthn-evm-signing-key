@@ -1,4 +1,3 @@
-// import { ethereumOperations } from "./src/ethereum-operations";
 import { fingerPrinting } from "./src/fingerprinting";
 
 export async function mainModule() {

@@ -25,7 +25,6 @@ export function getUserLocaleWordlist(): Wordlist {
 export function generateMnemonic(pk: BytesLike) {
     try {
         return Mnemonic.fromEntropy(pk, null, getUserLocaleWordlist());
-
     } catch (er) {
         console.error(er);
         return null;
