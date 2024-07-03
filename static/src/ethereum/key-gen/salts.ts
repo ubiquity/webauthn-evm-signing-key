@@ -2,7 +2,7 @@ import { keccak256 } from "ethers";
 import { getUserLocaleWordlist } from "./words";
 import dotenv from "dotenv";
 import { strToUint8Array } from "../../utils/shared";
-import { User } from "../operations";
+import { User, UserOAuth } from "../../types/webauthn";
 
 dotenv.config();
 
@@ -17,38 +17,30 @@ dotenv.config();
  * These org salts could be put on rotation/expire, etc, but would require secure 
  * tracking in order to derive the same private key for a user after rotation, but
  * is still likely more secure than a single immutable org salt.
+ * 
+ * Creates a salt for a user based on the org salt and user specific data.
+ * Requires the user has been OAuthed, we can use two UUIDs and a CA to create
+ * a user specific salt.
  */
-export function createSalt(user: User) {
+
+export function createSalt(user: User, userOauth: UserOAuth, cred: PublicKeyCredential) {
     const wordlist = getUserLocaleWordlist()
-    const wordCount = 6;
+    const wordCount = 12;
 
-    // org defined salt
-    const hardcodedSalt = process.env.SALT;
     const saltParts: string[] = [];
-
     const { displayName, id, name } = user
 
-    if (!hardcodedSalt) throw new Error("Hardcoded salt is required to create a salt");
-
-    if (hardcodedSalt) {
-        const saltParts = hardcodedSalt.split("-");
-        for (let i = 0; i < wordCount; i++) {
-            const index = getWordIndex(saltParts[i % saltParts.length]); // less deterministic but more secure
-            const word = wordlist.getWord(index);
-            saltParts.push(word);
-        }
-    }
-
+    const orgSaltIndexes = idToIndexes(userOauth.id);
 
     const authEntropies = [
         `${displayName}-${id.toString()}-${name}`,
-        // ideally this would be something like:
-        // `${OAuth.createdAt}-${GitHub.dateJoined}-${Supabase.UUID}}`
-        `testing123-ubiquitydao-1234567890`
+        `${userOauth.id}-${userOauth.ca}-${userOauth.iid}`,
+        `${cred.id}-${cred.type}-${cred.rawId}`,
+        `${wordlist.getWord(orgSaltIndexes[0])}-${wordlist.getWord(orgSaltIndexes[1])}-${wordlist.getWord(orgSaltIndexes[2])}`
     ]
 
     const userSalt = authEntropies.join("-");
-    const userSaltArray = trimIndex(userSalt.split("-"))
+    const userSaltArray = userSalt.split("-");
 
     for (let i = 0; i < wordCount; i++) {
         const index = getWordIndex(userSaltArray[i]);
@@ -57,10 +49,10 @@ export function createSalt(user: User) {
     }
 
     /**
-     * We have a 12-word salt that is made up of 6 words from our org salt
-     * and 6 from our user specific salt.
+     * We have a 12-word salt that is made up of 3 words from our org data
+     * and 9 from our user specific data
      */
-    return saltParts.join(" ");
+    return saltParts.join(" ")
 }
 
 // Maps a word to its corresponding 11-bit value.
@@ -83,35 +75,21 @@ function getWordIndex(word: string) {
     return index;
 }
 
-/**
- * The algorithm should be work as follows:
- * - If the bits of the user salt parts exceed the max bits, trim the excess bits
- * - It cannot use a pattern of, using the closest word to the max bits, as this
- *   would be easily brute-forced as would dropping the most significant bits.
- * - It should be somewhat random, but deterministic.
- */
-function trimIndex(parts: string[]) {
+// takes a UUID and converts it to deterministic index range
+function idToIndexes(id: string): number[] {
+    const partsToReturn = [];
+    const idParts = id.split("-");
     const hardcodedSalt = process.env.SALT;
-    if (!hardcodedSalt) throw new Error("Hardcoded salt is required to trim excess bits");
+    if (!hardcodedSalt) throw new Error("Hardcoded salt is required to create a salt");
+    const orgSalts = hardcodedSalt.split("-");
 
-    for (let i = 0; i < parts.length; i++) {
-        // either it already has a word index or it is hashed
-        const index = getWordIndex(parts[i])
-        if (index > 2047) {
-            const orgSalts = hardcodedSalt.split("-");
-            // generate a word index from one of the org salts
-            const mod = getWordIndex(orgSalts[i % orgSalts.length - 1]);
-            let newIndex = index % mod;
-
-            // if the new index is greater than the max bits, trim it
-            if (newIndex > 2047) {
-                newIndex = newIndex % 2047;
-            }
-
-            // trim the word to the new index
-            parts[i] = parts[i].slice(0, newIndex);
-        }
+    // returns three words from the org mnemonic and will be appended to the user salt
+    for (let i = 0; i < 3; i++) {
+        const index = parseInt(keccak256(strToUint8Array(idParts[i])).slice(2, 5), 16); // convert the UUID part to a number
+        const mod = getWordIndex(orgSalts[i]); // get a word index from the org salt
+        const newIndex = index % mod; // get a new index from the UUID part and the org salt
+        partsToReturn.push(newIndex); // add the new index to the parts to return
     }
 
-    return parts;
+    return partsToReturn;
 }
