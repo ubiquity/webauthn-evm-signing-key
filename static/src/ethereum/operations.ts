@@ -1,13 +1,8 @@
 import { createCredential } from "../credentials/create";
+import { User } from "../types/webauthn";
 import { strToUint8Array } from "../utils/shared";
 import { deriveEthereumPrivateKey } from "./key-gen/derive";
 import { createSalt } from "./key-gen/salts";
-
-export type User = {
-    displayName: string;
-    name: string;
-    id: string | BufferSource;
-}
 
 // Main function to create a credential and derive the private key
 export async function ethereumOperations(user: User) {

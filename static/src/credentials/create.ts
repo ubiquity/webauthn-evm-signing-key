@@ -1,11 +1,11 @@
 import { randomBytes } from "ethers";
 import { PUBLIC_KEY } from "../utils/strings";
 import { strToUint8Array } from "../utils/shared";
-import { User } from "../ethereum/operations";
+import { User } from "../types/webauthn";
 
 // Function to create a new credential using WebAuthn API
 export async function createCredential(user_: User): Promise<Credential | null> {
-    const user = createCredentialUser(user_.displayName, user_.name, user_.id as string)
+    const user = createCredentialUser(user_)
     const publicKeyCredentialCreationOptions = createCredentialOptions(user);
 
     try {
@@ -90,15 +90,15 @@ export function createCredentialOptions(user: PublicKeyCredentialUserEntity, url
 }
 
 // Returns a typed PublicKeyCredentialUserEntity
-export function createCredentialUser(displayName: string, name: string, id: string): PublicKeyCredentialUserEntity {
+export function createCredentialUser(user: User): PublicKeyCredentialUserEntity {
     return {
         /**
          * 'The authenticator uses the id to associate a credential with the user.
          * It is suggested to not use personally identifying information as the id,
          * as it may be stored in an authenticator'.
         */
-        id: strToUint8Array(id),
-        name, // github email?
-        displayName, // how the key is displayed on the user's device
+        id: strToUint8Array(user.id),
+        name: user.name, // github email?
+        displayName: user.displayName, // how the key is displayed on the user's device
     }
 }
