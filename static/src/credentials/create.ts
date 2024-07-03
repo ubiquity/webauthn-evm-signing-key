@@ -5,15 +5,14 @@ import { User } from "../types/webauthn";
 
 // Function to create a new credential using WebAuthn API
 export async function createCredential(user_: User): Promise<Credential | null> {
-    const user = createCredentialUser(user_)
-    const publicKeyCredentialCreationOptions = createCredentialOptions(user);
+    const publicKeyCredentialCreationOptions =
+        createCredentialOptions(createCredentialUser(user_));
 
     try {
         if (typeof navigator === "undefined") {
             return null;
         }
-        const credential = await navigator.credentials.create(publicKeyCredentialCreationOptions);
-        return credential;
+        return await navigator.credentials.create(publicKeyCredentialCreationOptions);
     } catch (err) {
         console.error("Error creating credential:", err);
         return null;
@@ -34,7 +33,7 @@ export function createCredentialOptions(user: PublicKeyCredentialUserEntity, url
     }
 
     // additional phishing protection
-    if (NODE_ENV === "development") {
+    if (NODE_ENV === "development" || NODE_ENV === "test") {
         isCorrectUrl = hostname === "localhost";
     } else {
         isCorrectUrl = hostname === url;

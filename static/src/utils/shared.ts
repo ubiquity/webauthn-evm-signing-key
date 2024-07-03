@@ -3,6 +3,6 @@ export function strToUint8Array(str: string | ArrayBuffer | BufferSource): Uint8
     if (typeof str === "string") {
         return new TextEncoder().encode(str)
     } else {
-        throw new Error("A new credential ID must be a string")
+        throw new Error(`A new credential ID must be a string - received ${typeof str} instead: ${str}`)
     }
 }
