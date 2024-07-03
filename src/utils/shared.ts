@@ -1,3 +1,5 @@
+export const PUBLIC_KEY = "public-key"
+
 // Helper function to convert a string to Uint8Array
 export function strToUint8Array(str: string | ArrayBuffer | BufferSource): Uint8Array {
     if (typeof str === "string") {

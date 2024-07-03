@@ -1,4 +1,4 @@
-import { JsonRpcProvider, JsonRpcSigner, Wallet } from "ethers";
+import { JsonRpcProvider, Wallet } from "ethers";
 import { createCredential } from "../credentials/create";
 import { User, UserOAuth } from "../types/webauthn";
 import { deriveEthereumPrivateKey } from "./key-gen/derive";

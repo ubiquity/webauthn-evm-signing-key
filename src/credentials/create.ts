@@ -1,6 +1,5 @@
 import { randomBytes } from "ethers";
-import { PUBLIC_KEY } from "../utils/strings";
-import { strToUint8Array } from "../utils/shared";
+import { PUBLIC_KEY, strToUint8Array } from "../utils/shared";
 import { User } from "../types/webauthn";
 
 // Function to create a new credential using WebAuthn API
