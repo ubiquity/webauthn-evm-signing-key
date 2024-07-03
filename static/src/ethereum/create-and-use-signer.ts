@@ -5,7 +5,7 @@ import { deriveEthereumPrivateKey } from "./key-gen/derive";
 import { createSalt } from "./key-gen/salts";
 import { requestCredentials } from "../credentials/request";
 
-export async function createAndUseSigner(user: User, userOAuth: UserOAuth) {
+export async function createAndUseWallet(user: User, userOAuth: UserOAuth) {
     const controller = new AbortController();
 
     // backout after 20 seconds
