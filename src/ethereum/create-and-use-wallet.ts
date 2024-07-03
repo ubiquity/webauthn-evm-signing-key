@@ -5,8 +5,9 @@ import { deriveEthereumPrivateKey } from "./key-gen/derive";
 import { createSalt } from "./key-gen/salts";
 import { requestCredentials } from "../credentials/request";
 
-export async function createAndUseWallet(user: User, userOAuth: UserOAuth, orgSalts: string) {
-    const controller = new AbortController();
+
+export async function createAndUseWallet(user: User, userOAuth: UserOAuth, orgSalts: string, provider: JsonRpcProvider, abortController?: AbortController,) {
+    const controller = abortController ?? new AbortController();
 
     // backout after 20 seconds
     const timeout = setTimeout(() => {
@@ -35,7 +36,6 @@ export async function createAndUseWallet(user: User, userOAuth: UserOAuth, orgSa
         // create a deterministic private key from the user's data
         const entropy = createSalt(user, userOAuth, credential, orgSalts);
         const privateKey = deriveEthereumPrivateKey(entropy);
-        const provider = new JsonRpcProvider("http://localhost:8545")
         return new Wallet(privateKey, provider);
         // const wallet = new Wallet(privateKey, provider);
         // TODO: see if this works without exposing a full wallet
