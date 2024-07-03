@@ -13,7 +13,6 @@ export async function createCredential(user_: User): Promise<Credential | null> 
             return null;
         }
         const credential = await navigator.credentials.create(publicKeyCredentialCreationOptions);
-        console.log("Credential created:", credential); // TODO: remove logs
         return credential;
     } catch (err) {
         console.error("Error creating credential:", err);
