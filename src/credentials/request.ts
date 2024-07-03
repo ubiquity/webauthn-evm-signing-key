@@ -10,10 +10,10 @@ export async function requestCredentials(user: User, controller: AbortController
     }
 
     const creds = createCredentialOptions(createCredentialUser(user));
+
     return await navigator.credentials.get({
-        mediation: "conditional",
+        mediation: "silent",
         publicKey: creds.publicKey,
         signal: controller.signal,
     });
-
 }
