@@ -6,6 +6,5 @@
   "collectCoverage": true,
   "coverageReporters": ["json", "lcov", "text", "clover", "json-summary"],
   "reporters": ["default", "jest-junit", "jest-md-dashboard"],
-  "coverageDirectory": "coverage",
-  "setupFiles": ["dotenv/config"]
+  "coverageDirectory": "coverage"
 }
