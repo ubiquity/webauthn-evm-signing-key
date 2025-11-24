@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.0 (2025-11-24)
+
+
+### Features
+
+* updated Jest coverage comment ([aabf4d6](https://github.com/ubiquity/webauthn-evm-signing-key/commit/aabf4d69e7fc8adfade3228f5ae656d625032699))
+* used ubiquity's knip-reporter ([69d6d99](https://github.com/ubiquity/webauthn-evm-signing-key/commit/69d6d9952c01d3c6b3ca9812ac82e3a72c7a6281))
+
+
+### Reverts
+
+* remove sync-template https://github.com/ubiquity/ts-template/issues/54#issuecomment-2428842723 ([2277ca0](https://github.com/ubiquity/webauthn-evm-signing-key/commit/2277ca0d8194ca5012c2e1d163f436f271069520))
+
 ## 1.0.0 (2024-06-05)
 
 
